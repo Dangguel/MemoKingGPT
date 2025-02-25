@@ -21,7 +21,6 @@ class OcrUseCase @Inject constructor() {
             // ✅ 한글 & 영어만 인식하도록 설정
             val recognizer = TextRecognition.getClient(
                 TextRecognizerOptions.Builder()
-                    .setLanguageHints(setOf("ko", "en")) // "ko" = 한국어, "en" = 영어
                     .build()
             )
 
