@@ -17,7 +17,7 @@ import androidx.room.PrimaryKey
 )
 data class NoteEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val folderId: Long,  // ✅ 삭제된 폴더의 id가 참조되면 오류 발생 -> CASCADE 처리 필요
+    val folderId: Long? = null,  // ✅ 삭제된 폴더의 id가 참조되면 오류 발생 -> CASCADE 처리 필요, null 허용
     val title: String,
     val content: String,
     val thumbnailPath: String = "",
