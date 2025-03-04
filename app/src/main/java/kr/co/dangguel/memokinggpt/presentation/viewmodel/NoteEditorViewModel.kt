@@ -1,74 +1,79 @@
 package kr.co.dangguel.memokinggpt.presentation.viewmodel
 
-import android.app.Application
 import android.content.Context
 import android.net.Uri
-import android.provider.MediaStore
-import androidx.activity.result.ActivityResultLauncher
-import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.AndroidViewModel
+import android.widget.Toast
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kr.co.dangguel.memokinggpt.domain.usecase.OcrUseCase
+import kr.co.dangguel.memokinggpt.data.local.entity.NoteEntity
+import kr.co.dangguel.memokinggpt.domain.usecase.NoteUseCase
 import javax.inject.Inject
 
-@HiltViewModel
 class NoteEditorViewModel @Inject constructor(
-    private val ocrUseCase: OcrUseCase,
-    private val app: Application
-) : AndroidViewModel(app) {
+    private val noteUseCase: NoteUseCase
+) : ViewModel() {
 
-    var text = mutableStateOf("")
-        private set
+    private val _title = MutableStateFlow("")
+    val title = _title.asStateFlow()
 
-    private var _imageUri: Uri? = null
-    private var _noteId: Long? = null
+    private val _text = MutableStateFlow("")
+    val text = _text.asStateFlow()
 
-    fun setNoteId(noteId: Long?) {
-        _noteId = noteId
+    fun updateTitle(newTitle: String) {
+        _title.value = newTitle
     }
 
     fun updateText(newText: String) {
-        text.value = newText
+        _text.value = newText
     }
 
-    fun processOcr(context: Context, uri: Uri) {
+    fun loadNote(noteId: Long) {
         viewModelScope.launch {
-            val extractedText = ocrUseCase.extractTextFromImage(context, uri)
-            text.value += "\n$extractedText"
+            val note = noteUseCase.getNoteById(noteId)
+            note?.let {
+                _title.value = it.title
+                _text.value = it.content
+            }
         }
     }
 
-    fun launchCamera(cameraLauncher: ActivityResultLauncher<Uri>) {
-        val imageUri = getNewImageUri()
-        _imageUri = imageUri
-        cameraLauncher.launch(imageUri)
-    }
-
-    fun pickImageFromGallery(galleryLauncher: ActivityResultLauncher<String>) {
-        galleryLauncher.launch("image/*")
-    }
-
-    private fun getNewImageUri(): Uri {
-        val contentValues = android.content.ContentValues().apply {
-            put(MediaStore.Images.Media.DISPLAY_NAME, "ocr_image_${System.currentTimeMillis()}.jpg")
-            put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
-        }
-
-        return app.contentResolver.insert(
-            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-            contentValues
-        ) ?: throw IllegalStateException("이미지를 저장할 수 없습니다.")
-    }
-
-    fun handleCameraResult(context: Context, success: Boolean) {
-        if (success && _imageUri != null) {
-            processOcr(context, _imageUri!!)
+    fun saveNote(noteId: Long?) {
+        viewModelScope.launch {
+            if (noteId == null) {
+                // 새 노트 저장
+                noteUseCase.insertNote(
+                    NoteEntity(
+                        title = _title.value,
+                        content = _text.value
+                    )
+                )
+            } else {
+                // 기존 노트 업데이트
+                noteUseCase.updateNote(
+                    NoteEntity(
+                        id = noteId,
+                        title = _title.value,
+                        content = _text.value
+                    )
+                )
+            }
         }
     }
 
     fun handleGalleryResult(context: Context, uri: Uri?) {
-        uri?.let { processOcr(context, it) }
+        uri?.let {
+            _text.value += "\n[이미지 추가됨: $uri]"
+        } ?: Toast.makeText(context, "이미지를 선택하지 않았습니다.", Toast.LENGTH_SHORT).show()
+    }
+
+    fun handleCameraResult(context: Context, success: Boolean) {
+        if (success) {
+            _text.value += "\n[카메라 촬영 완료]"
+        } else {
+            Toast.makeText(context, "카메라 촬영 실패", Toast.LENGTH_SHORT).show()
+        }
     }
 }

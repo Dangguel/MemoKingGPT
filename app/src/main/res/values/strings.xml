@@ -1,3 +1,10 @@
 <resources>
-    <string name="app_name">MemoKingGPT</string>
+    <string name="app_name">MemoKing GPT</string>
+    <string name="new_note">새 노트</string>
+    <string name="new_folder">새 폴더</string>
+    <string name="edit_note">노트 편집</string>
+    <string name="note_title">노트 제목 입력</string>
+    <string name="enter_title">제목을 입력하세요</string>
+    <string name="save">저장</string>
+    <string name="cancel">취소</string>
 </resources>

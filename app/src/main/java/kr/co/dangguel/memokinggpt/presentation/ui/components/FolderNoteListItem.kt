@@ -1,17 +1,15 @@
 package kr.co.dangguel.memokinggpt.presentation.ui.components
 
-import androidx.compose.foundation.background
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Create
-import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import kr.co.dangguel.memokinggpt.R
 import kr.co.dangguel.memokinggpt.presentation.viewmodel.Item
 import kr.co.dangguel.memokinggpt.ui.theme.MemoKingTypography
@@ -19,17 +17,15 @@ import kr.co.dangguel.memokinggpt.ui.theme.MemoKingTypography
 @Composable
 fun FolderListItem(
     folder: Item.FolderItem,
-    notes: List<Item.NoteItem>,
+    noteCount: Int,  // ✅ 폴더 내 노트 개수 전달
     onClick: (Long) -> Unit,
     onEditClick: (Long) -> Unit
 ) {
-    val noteCount = notes.count { it.note.folderId == folder.folder.id } // ✅ 폴더 내부 노트 개수 계산
-
     ListItem(
         headlineContent = { Text(folder.folder.name, style = MemoKingTypography.labelMedium) },
         supportingContent = {
             Text(
-                text = "$noteCount notes",
+                text = "$noteCount notes",  // ✅ 정확한 노트 개수 표시
                 style = MemoKingTypography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -38,12 +34,16 @@ fun FolderListItem(
             Icon(
                 painter = painterResource(id = R.drawable.rounded_folder),
                 contentDescription = "폴더 아이콘",
-                tint = Color.Unspecified
+                tint = Color.Unspecified,
+                modifier = Modifier.size(48.dp)
             )
         },
         trailingContent = {
             IconButton(onClick = { onEditClick(folder.folder.id) }) {
-                Icon(painter = painterResource(id = R.drawable.edit), contentDescription = "폴더 편집")
+                Icon(
+                    painter = painterResource(id = R.drawable.edit),
+                    contentDescription = "폴더 편집"
+                )
             }
         },
         colors = ListItemDefaults.colors(containerColor = Color.Transparent), // ✅ 배경색 제거
@@ -54,17 +54,34 @@ fun FolderListItem(
     )
 }
 
-
 @Composable
-fun NoteListItem(note: Item.NoteItem, onClick: (Long) -> Unit, onEditClick: (Long) -> Unit) {
+fun NoteListItem(
+    note: Item.NoteItem,
+    onClick: (Long) -> Unit,
+    onEditClick: (Long) -> Unit
+) {
     ListItem(
         headlineContent = { Text(note.note.title, style = MemoKingTypography.labelMedium) },
+        supportingContent = {
+            Text(
+                text = note.note.content.take(30) + if (note.note.content.length > 30) "..." else "",
+                style = MemoKingTypography.labelSmall
+            )
+        },
         leadingContent = {
-            Icon(painter = painterResource(id = R.drawable.rounded_note), contentDescription = "노트 아이콘", tint = Color.Unspecified)
+            Icon(
+                painter = painterResource(id = R.drawable.rounded_note),
+                contentDescription = "노트 아이콘",
+                tint = Color.Unspecified,
+                modifier = Modifier.size(48.dp)
+            )
         },
         trailingContent = {
             IconButton(onClick = { onEditClick(note.note.id) }) {
-                Icon(painter = painterResource(id = R.drawable.edit), contentDescription = "노트 편집")
+                Icon(
+                    painter = painterResource(id = R.drawable.edit),
+                    contentDescription = "노트 편집"
+                )
             }
         },
         colors = ListItemDefaults.colors(containerColor = Color.Transparent), // ✅ 배경색 제거

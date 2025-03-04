@@ -12,10 +12,18 @@ class NoteRepositoryImpl @Inject constructor(
     private val noteDao: NoteDao
 ) : NoteRepository {
 
+    override suspend fun getNoteById(noteId: Long): NoteEntity? {
+        return noteDao.getNoteById(noteId)
+    }
+
     override fun getAllNotes(): Flow<List<NoteEntity>> = noteDao.getAllNotes()
 
     override suspend fun insertNote(note: NoteEntity): Long {
         return noteDao.insertNote(note)
+    }
+
+    override suspend fun updateNote(note: NoteEntity) { // ✅ updateNote() 구현 추가
+        noteDao.updateNote(note)
     }
 
     override suspend fun deleteNote(note: NoteEntity) {
