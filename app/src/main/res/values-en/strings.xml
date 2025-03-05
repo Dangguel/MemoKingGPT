@@ -1,0 +1,31 @@
+<resources>
+    <!-- App General -->
+    <string name="app_name">MemoKing GPT</string>
+
+    <!-- UI Labels -->
+    <string name="new_note">New Note</string>
+    <string name="new_folder">New Folder</string>
+    <string name="folders">Folders</string>
+    <string name="notes">Notes</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="confirm">Confirm</string>
+    <string name="cancel">Cancel</string>
+    <string name="no_data_area">No Folders or Notes Available</string>
+
+    <!-- Alerts -->
+    <string name="delete_note_confirm">Are you sure you want to delete this note?</string>
+    <string name="delete_folder_confirm">This will delete the folder and all notes inside. Continue?</string>
+    <string name="note_deleted">Note has been deleted.</string>
+    <string name="folder_deleted">Folder and all notes inside have been deleted.</string>
+    <string name="ocr_dialog_title">Text Recognition</string>
+    <string name="ocr_dialog_message">Take a photo or select from gallery to extract text.</string>
+    <string name="ocr_camera_button">Take Photo</string>
+    <string name="ocr_gallery_button">Select from Gallery</string>
+
+    <!-- 📌 NoteEditor 관련 -->
+    <string name="image_added">Image added: %1$s</string>
+    <string name="no_image_selected">No image selected.</string>
+    <string name="camera_capture_success">Camera capture successful</string>
+    <string name="camera_capture_failed">Camera capture failed</string>
+</resources>

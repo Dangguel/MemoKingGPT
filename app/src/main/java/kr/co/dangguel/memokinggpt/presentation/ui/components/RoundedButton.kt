@@ -32,8 +32,8 @@ fun RoundedButton(
 
             Text(
                 text,
-                style = MemoKingTypography.labelMedium,
-                modifier = Modifier.weight(1f)
+                style = MemoKingTypography.titleSmall,
+                modifier = Modifier.weight(1f),
             )
         }
     }

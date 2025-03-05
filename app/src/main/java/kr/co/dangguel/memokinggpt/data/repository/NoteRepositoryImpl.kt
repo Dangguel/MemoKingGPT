@@ -33,4 +33,12 @@ class NoteRepositoryImpl @Inject constructor(
     override suspend fun deleteAllNotes() {
         noteDao.deleteAllNotes()
     }
+
+    override suspend fun deleteNoteById(noteId: Long) { // ✅ 추가
+        noteDao.deleteNoteById(noteId)
+    }
+
+    override suspend fun getNotesByFolderId(folderId: Long): Flow<List<NoteEntity>> {
+        return noteDao.getNotesByFolderId(folderId) // ✅ Room의 DAO 호출
+    }
 }

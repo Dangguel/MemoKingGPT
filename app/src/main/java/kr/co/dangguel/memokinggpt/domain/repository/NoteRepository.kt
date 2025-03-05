@@ -10,4 +10,6 @@ interface NoteRepository {
     suspend fun updateNote(note: NoteEntity) // ✅ 업데이트 기능 추가
     suspend fun deleteNote(note: NoteEntity)
     suspend fun deleteAllNotes()
+    suspend fun deleteNoteById(noteId: Long) // ✅ 추가
+    suspend fun getNotesByFolderId(folderId: Long): Flow<List<NoteEntity>> // ✅ 추가
 }

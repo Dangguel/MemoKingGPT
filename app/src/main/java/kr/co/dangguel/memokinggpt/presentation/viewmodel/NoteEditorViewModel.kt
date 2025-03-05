@@ -5,13 +5,16 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kr.co.dangguel.memokinggpt.R
 import kr.co.dangguel.memokinggpt.data.local.entity.NoteEntity
 import kr.co.dangguel.memokinggpt.domain.usecase.NoteUseCase
 import javax.inject.Inject
 
+@HiltViewModel
 class NoteEditorViewModel @Inject constructor(
     private val noteUseCase: NoteUseCase
 ) : ViewModel() {
@@ -65,15 +68,15 @@ class NoteEditorViewModel @Inject constructor(
 
     fun handleGalleryResult(context: Context, uri: Uri?) {
         uri?.let {
-            _text.value += "\n[이미지 추가됨: $uri]"
-        } ?: Toast.makeText(context, "이미지를 선택하지 않았습니다.", Toast.LENGTH_SHORT).show()
+            _text.value += "\n" + context.getString(R.string.image_added, uri.toString())
+        } ?: Toast.makeText(context, context.getString(R.string.no_image_selected), Toast.LENGTH_SHORT).show()
     }
 
     fun handleCameraResult(context: Context, success: Boolean) {
         if (success) {
-            _text.value += "\n[카메라 촬영 완료]"
+            _text.value += "\n" + context.getString(R.string.camera_capture_success)
         } else {
-            Toast.makeText(context, "카메라 촬영 실패", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, context.getString(R.string.camera_capture_failed), Toast.LENGTH_SHORT).show()
         }
     }
 }

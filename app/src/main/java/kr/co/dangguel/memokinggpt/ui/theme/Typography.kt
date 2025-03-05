@@ -11,11 +11,11 @@ val MemoKingTypography = Typography(
     headlineSmall = TextStyle(fontSize = 24.sp),
     titleLarge = TextStyle(fontSize = 22.sp),
     titleMedium = TextStyle(fontSize = 16.sp),
-    titleSmall = TextStyle(fontSize = 14.sp),
+    titleSmall = TextStyle(fontSize = 15.sp, fontWeight = FontWeight.Bold),
     bodyLarge = TextStyle(fontSize = 16.sp),
     bodyMedium = TextStyle(fontSize = 14.sp),
     bodySmall = TextStyle(fontSize = 12.sp),
     labelLarge = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold),
     labelMedium = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold),
-    labelSmall = TextStyle(fontSize = 14.sp)
+    labelSmall = TextStyle(fontSize = 14.sp),
 )

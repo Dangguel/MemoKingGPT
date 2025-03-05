@@ -3,6 +3,8 @@ package kr.co.dangguel.memokinggpt.presentation.ui.components
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -19,7 +21,7 @@ fun FolderListItem(
     folder: Item.FolderItem,
     noteCount: Int,  // ✅ 폴더 내 노트 개수 전달
     onClick: (Long) -> Unit,
-    onEditClick: (Long) -> Unit
+    onDeleteFolderClick: (Long) -> Unit
 ) {
     ListItem(
         headlineContent = { Text(folder.folder.name, style = MemoKingTypography.labelMedium) },
@@ -39,10 +41,10 @@ fun FolderListItem(
             )
         },
         trailingContent = {
-            IconButton(onClick = { onEditClick(folder.folder.id) }) {
+            IconButton(onClick = { onDeleteFolderClick(folder.folder.id) }) {
                 Icon(
-                    painter = painterResource(id = R.drawable.edit),
-                    contentDescription = "폴더 편집"
+                    imageVector = Icons.Default.Delete, // ✅ 삭제 아이콘으로 변경
+                    contentDescription = "폴더 삭제" // ✅ 설명 변경
                 )
             }
         },
@@ -58,7 +60,7 @@ fun FolderListItem(
 fun NoteListItem(
     note: Item.NoteItem,
     onClick: (Long) -> Unit,
-    onEditClick: (Long) -> Unit
+    onDeleteNoteClick: (Long) -> Unit
 ) {
     ListItem(
         headlineContent = { Text(note.note.title, style = MemoKingTypography.labelMedium) },
@@ -77,10 +79,10 @@ fun NoteListItem(
             )
         },
         trailingContent = {
-            IconButton(onClick = { onEditClick(note.note.id) }) {
+            IconButton(onClick = { onDeleteNoteClick(note.note.id) }) {
                 Icon(
-                    painter = painterResource(id = R.drawable.edit),
-                    contentDescription = "노트 편집"
+                    imageVector = Icons.Default.Delete, // ✅ 삭제 아이콘으로 변경
+                    contentDescription = "노트 삭제" // ✅ 설명 변경
                 )
             }
         },

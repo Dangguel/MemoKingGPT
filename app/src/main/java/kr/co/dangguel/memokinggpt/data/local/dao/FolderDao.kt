@@ -15,8 +15,8 @@ interface FolderDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFolder(folder: FolderEntity): Long
 
-    @Delete
-    suspend fun deleteFolder(folder: FolderEntity)
+    @Query("DELETE FROM folders WHERE id = :folderId") // ✅ 기존 FolderEntity 삭제 -> Long ID 기반 삭제
+    suspend fun deleteFolderById(folderId: Long)
 
     @Query("DELETE FROM folders")
     suspend fun deleteAllFolders()

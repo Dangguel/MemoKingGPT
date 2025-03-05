@@ -11,8 +11,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import kr.co.dangguel.memokinggpt.R
 import kr.co.dangguel.memokinggpt.presentation.viewmodel.NoteEditorViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,7 +49,7 @@ fun NoteEditorScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(noteTitle.ifEmpty { "새 노트" }) }, // ✅ 제목이 없으면 "새 노트" 표시
+                title = { Text(noteTitle.ifEmpty { stringResource(R.string.new_note) }) }, // ✅ 제목이 없으면 "새 노트" 표시
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "뒤로가기")
@@ -77,7 +79,7 @@ fun NoteEditorScreen(
             OutlinedTextField(
                 value = noteTitle ?: "",  // ✅ Null 방지
                 onValueChange = viewModel::updateTitle,
-                label = { Text("제목을 입력하세요") },
+                label = { Text(stringResource(R.string.new_note)) },
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -95,15 +97,15 @@ fun NoteEditorScreen(
         if (showOcrDialog) {
             AlertDialog(
                 onDismissRequest = { showOcrDialog = false },
-                title = { Text("사진 속 글자 인식") },
-                text = { Text("사진을 찍거나 갤러리에서 선택하여 텍스트를 추출하세요.") },
+                title = { Text(stringResource(R.string.ocr_dialog_title)) },
+                text = { Text(stringResource(R.string.ocr_dialog_message)) },
                 confirmButton = {
                     Button(onClick = {
                         showOcrDialog = false
                         cameraLauncher.launch(Uri.EMPTY) // ✅ 카메라 실행
                     }) {
                         Icon(Icons.Default.Camera, contentDescription = null)
-                        Text("카메라로 촬영")
+                        Text(stringResource(R.string.ocr_camera_button))
                     }
                 },
                 dismissButton = {
@@ -112,7 +114,7 @@ fun NoteEditorScreen(
                         galleryLauncher.launch("image/*") // ✅ 갤러리 실행
                     }) {
                         Icon(Icons.Default.PhotoLibrary, contentDescription = null)
-                        Text("갤러리에서 선택")
+                        Text(stringResource(R.string.ocr_gallery_button))
                     }
                 }
             )

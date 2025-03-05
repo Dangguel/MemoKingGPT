@@ -14,4 +14,6 @@ class NoteUseCase @Inject constructor(
     suspend fun updateNote(note: NoteEntity) = repository.updateNote(note)
     suspend fun deleteNote(note: NoteEntity) = repository.deleteNote(note)
     suspend fun deleteAllNotes() = repository.deleteAllNotes()
+    suspend fun deleteNoteById(noteId: Long) = repository.deleteNoteById(noteId)
+    suspend fun getNotesByFolderId(folderId: Long) = repository.getNotesByFolderId(folderId)
 }

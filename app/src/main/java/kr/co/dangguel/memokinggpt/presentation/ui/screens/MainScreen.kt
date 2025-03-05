@@ -1,5 +1,6 @@
 package kr.co.dangguel.memokinggpt.presentation.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
@@ -8,6 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import kr.co.dangguel.memokinggpt.R
 import kr.co.dangguel.memokinggpt.presentation.ui.components.*
@@ -24,8 +26,8 @@ fun MainScreen(
     onBackClick: () -> Unit,
     onAddFolderClick: () -> Unit,
     onAddNoteClick: () -> Unit,
-    onEditFolderClick: (Long) -> Unit,
-    onEditNoteClick: (Long) -> Unit
+    onDeleteFolderClick: (Long) -> Unit,
+    onDeleteNoteClick: (Long) -> Unit
 ) {
     val context = LocalContext.current
 
@@ -36,11 +38,9 @@ fun MainScreen(
         .filter { it.parentFolderId == currentFolderId }
         .map { Item.FolderItem(it) }
 
-    val notes = viewModel.notes.collectAsState().value
-        .filter { it.folderId == currentFolderId }
-        .map { Item.NoteItem(it) }
+    val allNotes = viewModel.notes.collectAsState().value // ✅ 모든 노트를 미리 가져옴
 
-    val title = if (currentFolderId == null) "MemoKing GPT" else "📂 ${folders.find { it.folder.id == currentFolderId }?.folder?.name ?: "Unknown"}"
+    val title = if (currentFolderId == null) stringResource(R.string.app_name) else "📂 ${folders.find { it.folder.id == currentFolderId }?.folder?.name ?: "Unknown"}"
     val showBackButton = currentFolderId != null
 
     Scaffold(
@@ -60,13 +60,13 @@ fun MainScreen(
             ) {
                 RoundedButton(
                     icon = newNoteIcon,
-                    text = "New Note",
+                    text = stringResource(R.string.new_note),
                     onClick = onAddNoteClick,
                     modifier = Modifier.weight(1f)
                 )
                 RoundedButton(
                     icon = newFolderIcon,
-                    text = "New Folder",
+                    text = stringResource(R.string.new_folder),
                     onClick = onAddFolderClick,
                     modifier = Modifier.weight(1f)
                 )
@@ -78,35 +78,45 @@ fun MainScreen(
                 // 🔹 폴더 목록
                 if (folders.isNotEmpty()) {
                     item {
-                        Text(text = "Folders", style = MemoKingTypography.labelLarge)
+                        Text(text = stringResource(R.string.folders), style = MemoKingTypography.labelLarge)
                         Spacer(modifier = Modifier.height(8.dp))
                     }
                     items(folders.size) { index ->
                         val folderItem = folders[index]
-                        val noteCount = notes.count { it.note.folderId == folderItem.folder.id }
+
+                        // ✅ 폴더 내 노트 개수 직접 for문 돌려서 확인
+                        var noteCount = 0
+                        for (note in allNotes) {
+                            if (note.folderId == folderItem.folder.id) {
+                                noteCount++
+                            }
+                        }
+
+                        Log.d("NoteCountCheck", "Folder ID: ${folderItem.folder.id}, Note Count: $noteCount")
 
                         FolderListItem(
                             folder = folderItem,
                             noteCount = noteCount,
                             onClick = { onFolderClick(folderItem.folder.id) },
-                            onEditClick = { onEditFolderClick(folderItem.folder.id) }
+                            onDeleteFolderClick = { viewModel.onDeleteFolder(folderItem.folder.id) }
                         )
                     }
                 }
 
                 // 🔹 노트 목록
+                val notes = allNotes.filter { it.folderId == currentFolderId }
                 if (notes.isNotEmpty()) {
                     item {
                         Spacer(modifier = Modifier.height(16.dp))
-                        Text(text = "Notes", style = MemoKingTypography.labelLarge)
+                        Text(text = stringResource(R.string.notes), style = MemoKingTypography.labelLarge)
                         Spacer(modifier = Modifier.height(8.dp))
                     }
                     items(notes.size) { index ->
                         val noteItem = notes[index]
                         NoteListItem(
-                            note = noteItem,
-                            onClick = { onNoteClick(noteItem.note.id) },
-                            onEditClick = { onEditNoteClick(noteItem.note.id) }
+                            note = Item.NoteItem(noteItem),
+                            onClick = { onNoteClick(noteItem.id) },
+                            onDeleteNoteClick = { viewModel.onDeleteNote(noteItem.id) }
                         )
                     }
                 }
@@ -115,7 +125,7 @@ fun MainScreen(
                 if (folders.isEmpty() && notes.isEmpty()) {
                     item {
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            Text("No Folders or Notes Available", style = MemoKingTypography.bodyLarge)
+                            Text(stringResource(R.string.no_data_area), style = MemoKingTypography.bodyLarge)
                         }
                     }
                 }

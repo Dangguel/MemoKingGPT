@@ -8,7 +8,6 @@ import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.RequestConfiguration
 import dagger.hilt.android.AndroidEntryPoint
-import kr.co.dangguel.memokinggpt.presentation.navigation.NavigationManager
 import kr.co.dangguel.memokinggpt.presentation.ui.navigation.AppNavGraph
 import kr.co.dangguel.memokinggpt.presentation.viewmodel.MainViewModel
 import kr.co.dangguel.memokinggpt.ui.theme.MemoKingGPTTheme
@@ -23,9 +22,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             MemoKingGPTTheme { // ✅ 테마 적용
                 val navController = rememberNavController()
-                val navManager = NavigationManager()
 
-                AppNavGraph(navController = navController, viewModel = viewModel, navManager = navManager)
+                AppNavGraph(navController = navController, viewModel = viewModel)
             }
         }
     }

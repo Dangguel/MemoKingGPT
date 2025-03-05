@@ -20,8 +20,8 @@ class FolderRepositoryImpl @Inject constructor(
         return folderDao.insertFolder(folder)
     }
 
-    override suspend fun deleteFolder(folder: FolderEntity) {
-        folderDao.deleteFolder(folder)
+    override suspend fun deleteFolder(folderId: Long) { // ✅ 기존 FolderEntity → Long 으로 변경
+        folderDao.deleteFolderById(folderId)
     }
 
     override suspend fun deleteAllFolders() {

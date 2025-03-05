@@ -24,5 +24,11 @@ interface NoteDao {
 
     @Query("DELETE FROM notes")
     suspend fun deleteAllNotes()
+
+    @Query("DELETE FROM notes WHERE id = :noteId") // ✅ 추가
+    suspend fun deleteNoteById(noteId: Long)
+
+    @Query("SELECT * FROM notes WHERE folderId = :folderId")
+    fun getNotesByFolderId(folderId: Long): Flow<List<NoteEntity>>
 }
 

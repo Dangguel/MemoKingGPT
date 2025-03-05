@@ -11,14 +11,12 @@ import kr.co.dangguel.memokinggpt.data.local.entity.FolderEntity
 import kr.co.dangguel.memokinggpt.data.local.entity.NoteEntity
 import kr.co.dangguel.memokinggpt.domain.usecase.FolderUseCase
 import kr.co.dangguel.memokinggpt.domain.usecase.NoteUseCase
-import kr.co.dangguel.memokinggpt.presentation.navigation.NavigationManager
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val folderUseCase: FolderUseCase,
-    private val noteUseCase: NoteUseCase,
-    private val navManager: NavigationManager
+    private val noteUseCase: NoteUseCase
 ) : ViewModel() {
 
     private val _folders = MutableStateFlow<List<FolderEntity>>(emptyList())
@@ -90,15 +88,15 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun navigateToFolder(folderId: Long) {
+    fun onDeleteFolder(folderId: Long) {
         viewModelScope.launch {
-            navManager.navigate("folderDetail/$folderId")
+            folderUseCase.deleteFolderWithNotes(folderId)
         }
     }
 
-    fun navigateToNote(noteId: Long?) {
+    fun onDeleteNote(noteId: Long) {
         viewModelScope.launch {
-            navManager.navigate("note_edit/${noteId ?: "null"}")
+            noteUseCase.deleteNoteById(noteId) // ✅ 노트 삭제를 UseCase에서 처리
         }
     }
 }

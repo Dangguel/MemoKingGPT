@@ -1,10 +1,31 @@
 <resources>
+    <!-- App General -->
     <string name="app_name">MemoKing GPT</string>
-    <string name="new_note">새 노트</string>
-    <string name="new_folder">새 폴더</string>
-    <string name="edit_note">노트 편집</string>
-    <string name="note_title">노트 제목 입력</string>
-    <string name="enter_title">제목을 입력하세요</string>
-    <string name="save">저장</string>
+
+    <!-- UI Labels -->
+    <string name="new_note">New Note</string>
+    <string name="new_folder">New Folder</string>
+    <string name="folders">Folders</string>
+    <string name="notes">Notes</string>
+    <string name="edit">편집</string>
+    <string name="delete">삭제</string>
+    <string name="confirm">확인</string>
     <string name="cancel">취소</string>
+    <string name="no_data_area">No Folders or Notes Available</string>
+
+    <!-- Alerts -->
+    <string name="delete_note_confirm">정말 이 노트를 삭제하시겠습니까?</string>
+    <string name="delete_folder_confirm">이 폴더와 내부 노트들이 모두 삭제됩니다. 계속하시겠습니까?</string>
+    <string name="note_deleted">노트가 삭제되었습니다.</string>
+    <string name="folder_deleted">폴더 및 내부 노트가 삭제되었습니다.</string>
+    <string name="ocr_dialog_title">사진 속 글자 인식</string>
+    <string name="ocr_dialog_message">사진을 찍거나 갤러리에서 선택하여 텍스트를 추출하세요.</string>
+    <string name="ocr_camera_button">카메라로 촬영</string>
+    <string name="ocr_gallery_button">갤러리에서 선택</string>
+
+    <!-- 📌 NoteEditor 관련 -->
+    <string name="image_added">이미지 추가됨: %1$s</string>
+    <string name="no_image_selected">이미지를 선택하지 않았습니다.</string>
+    <string name="camera_capture_success">카메라 촬영 완료</string>
+    <string name="camera_capture_failed">카메라 촬영 실패</string>
 </resources>

@@ -7,6 +7,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kr.co.dangguel.memokinggpt.R
@@ -21,7 +22,9 @@ import kr.co.dangguel.memokinggpt.ui.theme.MemoKingTypography
 fun FolderDetailScreen(
     navController: NavController,
     viewModel: MainViewModel,
-    folderId: Long
+    folderId: Long,
+    onNoteClick: (Long) -> Unit,  // ✅ 추가
+    onDeleteNoteClick: (Long) -> Unit // ✅ 추가
 ) {
     val context = LocalContext.current
     val notes = viewModel.notes.collectAsState().value
@@ -62,7 +65,7 @@ fun FolderDetailScreen(
                         contentDescription = "New Note"
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "New Note", style = MemoKingTypography.labelMedium)
+                    Text(text = stringResource(R.string.new_note), style = MemoKingTypography.labelMedium)
                 }
             }
 
@@ -71,15 +74,15 @@ fun FolderDetailScreen(
             // ✅ 노트 목록 (폴더 내부)
             LazyColumn {
                 item {
-                    Text(text = "Notes", style = MemoKingTypography.labelLarge)
+                    Text(text = stringResource(R.string.notes), style = MemoKingTypography.labelLarge)
                     Spacer(modifier = Modifier.height(8.dp))
                 }
                 items(notes.size) { index ->
                     val noteItem = notes[index]
                     NoteListItem(
                         note = noteItem,
-                        onClick = { navController.navigate("note_edit/${noteItem.note.id}") }, // ✅ 노트 클릭 시 편집 화면 이동
-                        onEditClick = { navController.navigate("note_edit/${noteItem.note.id}") } // ✅ 편집 버튼 클릭 시 편집 화면 이동
+                        onClick = { onNoteClick(noteItem.note.id) },  // ✅ 수정
+                        onDeleteNoteClick = { onDeleteNoteClick(noteItem.note.id) } // ✅ 수정
                     )
                 }
             }
