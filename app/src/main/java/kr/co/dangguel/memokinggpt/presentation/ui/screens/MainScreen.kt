@@ -25,11 +25,13 @@ fun MainScreen(
     onNoteClick: (Long) -> Unit,
     onBackClick: () -> Unit,
     onAddFolderClick: () -> Unit,
-    onAddNoteClick: () -> Unit,
-    onDeleteFolderClick: (Long) -> Unit,
-    onDeleteNoteClick: (Long) -> Unit
+    onAddNoteClick: () -> Unit
 ) {
     val context = LocalContext.current
+
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var deleteTargetId by remember { mutableStateOf<Long?>(null) }
+    var isFolder by remember { mutableStateOf(false) }
 
     val newNoteIcon = painterResource(id = R.drawable.new_note)
     val newFolderIcon = painterResource(id = R.drawable.new_folder)
@@ -40,11 +42,18 @@ fun MainScreen(
 
     val allNotes = viewModel.notes.collectAsState().value // ✅ 모든 노트를 미리 가져옴
 
-    val title = if (currentFolderId == null) stringResource(R.string.app_name) else "📂 ${folders.find { it.folder.id == currentFolderId }?.folder?.name ?: "Unknown"}"
+    val title =
+        if (currentFolderId == null) stringResource(R.string.app_name) else "📂 ${folders.find { it.folder.id == currentFolderId }?.folder?.name ?: "Unknown"}"
     val showBackButton = currentFolderId != null
 
     Scaffold(
-        topBar = { TopBar(title = title, showBackButton = showBackButton, onBackClick = onBackClick) },
+        topBar = {
+            TopBar(
+                title = title,
+                showBackButton = showBackButton,
+                onBackClick = onBackClick
+            )
+        },
         bottomBar = { AdBanner(context) },
     ) { paddingValues ->
         Column(
@@ -76,11 +85,15 @@ fun MainScreen(
 
             LazyColumn {
                 // 🔹 폴더 목록
+
+                item {
+                    Text(
+                        text = stringResource(R.string.folders),
+                        style = MemoKingTypography.labelLarge
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
                 if (folders.isNotEmpty()) {
-                    item {
-                        Text(text = stringResource(R.string.folders), style = MemoKingTypography.labelLarge)
-                        Spacer(modifier = Modifier.height(8.dp))
-                    }
                     items(folders.size) { index ->
                         val folderItem = folders[index]
 
@@ -92,44 +105,106 @@ fun MainScreen(
                             }
                         }
 
-                        Log.d("NoteCountCheck", "Folder ID: ${folderItem.folder.id}, Note Count: $noteCount")
+                        Log.d(
+                            "NoteCountCheck",
+                            "Folder ID: ${folderItem.folder.id}, Note Count: $noteCount"
+                        )
 
                         FolderListItem(
                             folder = folderItem,
                             noteCount = noteCount,
                             onClick = { onFolderClick(folderItem.folder.id) },
-                            onDeleteFolderClick = { viewModel.onDeleteFolder(folderItem.folder.id) }
+                            onDeleteFolderClick = {
+                                deleteTargetId = folderItem.folder.id
+                                isFolder = true
+                                showDeleteDialog = true
+                            }
                         )
+                    }
+                } else {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = stringResource(R.string.no_folders),
+                                style = MemoKingTypography.bodyLarge
+                            )
+                        }
                     }
                 }
 
                 // 🔹 노트 목록
                 val notes = allNotes.filter { it.folderId == currentFolderId }
+
+                item {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = stringResource(R.string.notes),
+                        style = MemoKingTypography.labelLarge
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
                 if (notes.isNotEmpty()) {
-                    item {
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(text = stringResource(R.string.notes), style = MemoKingTypography.labelLarge)
-                        Spacer(modifier = Modifier.height(8.dp))
-                    }
                     items(notes.size) { index ->
                         val noteItem = notes[index]
                         NoteListItem(
                             note = Item.NoteItem(noteItem),
                             onClick = { onNoteClick(noteItem.id) },
-                            onDeleteNoteClick = { viewModel.onDeleteNote(noteItem.id) }
+                            onDeleteNoteClick = {
+                                deleteTargetId = noteItem.id
+                                isFolder = false
+                                showDeleteDialog = true
+                            }
                         )
                     }
-                }
-
-                // ✅ 폴더와 노트가 없을 경우 Empty Message 추가
-                if (folders.isEmpty() && notes.isEmpty()) {
+                } else {
                     item {
-                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            Text(stringResource(R.string.no_data_area), style = MemoKingTypography.bodyLarge)
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = stringResource(R.string.no_notes),
+                                style = MemoKingTypography.bodyLarge
+                            )
                         }
                     }
                 }
             }
         }
+    }
+
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text(stringResource(R.string.delete_confirmation)) },
+            text = { Text(stringResource(R.string.delete_warning)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    deleteTargetId?.let { id ->
+                        if (isFolder) {
+                            viewModel.onDeleteFolder(id)
+                        } else {
+                            viewModel.onDeleteNote(id)
+                        }
+                    }
+                    showDeleteDialog = false
+                    deleteTargetId = null
+                }) {
+                    Text(stringResource(R.string.yes))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }) {
+                    Text(stringResource(R.string.no))
+                }
+            }
+        )
     }
 }

@@ -25,6 +25,11 @@ class NoteEditorViewModel @Inject constructor(
     private val _text = MutableStateFlow("")
     val text = _text.asStateFlow()
 
+    private val _showSaveDialog = MutableStateFlow(false)
+    val showSaveDialog = _showSaveDialog.asStateFlow()
+
+    private var currentNoteId: Long? = null
+
     fun updateTitle(newTitle: String) {
         _title.value = newTitle
     }
@@ -39,8 +44,22 @@ class NoteEditorViewModel @Inject constructor(
             note?.let {
                 _title.value = it.title
                 _text.value = it.content
+                currentNoteId = noteId
             }
         }
+    }
+
+    fun requestSaveNote() {
+        _showSaveDialog.value = true
+    }
+
+    fun confirmSaveNote() {
+        _showSaveDialog.value = false
+        saveNote(currentNoteId)
+    }
+
+    fun cancelSaveNote() {
+        _showSaveDialog.value = false
     }
 
     fun saveNote(noteId: Long?) {

@@ -5,24 +5,27 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kr.co.dangguel.memokinggpt.R
 import kr.co.dangguel.memokinggpt.presentation.viewmodel.NoteEditorViewModel
+import kr.co.dangguel.memokinggpt.ui.theme.MemoKingTypography
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoteEditorScreen(
     viewModel: NoteEditorViewModel,
     navController: NavController,
-    noteId: Long? // ✅ 노트 ID 추가
+    noteId: Long?
 ) {
     val context = LocalContext.current
     var showOcrDialog by remember { mutableStateOf(false) }
@@ -49,7 +52,30 @@ fun NoteEditorScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(noteTitle.ifEmpty { stringResource(R.string.new_note) }) }, // ✅ 제목이 없으면 "새 노트" 표시
+                title = {
+                    // ✅ 테두리 없는 제목 입력 필드 (BasicTextField 사용)
+                    BasicTextField(
+                        value = noteTitle,
+                        onValueChange = viewModel::updateTitle,
+                        textStyle = MemoKingTypography.labelLarge,
+                        modifier = Modifier.fillMaxWidth(),
+                        decorationBox = { innerTextField ->
+                            Box(
+                                modifier = Modifier
+                                    .padding(vertical = 4.dp)
+                                    .fillMaxWidth()
+                            ) {
+                                if (noteTitle.isEmpty()) {
+                                    Text(
+                                        text = stringResource(R.string.enter_note_title), // ✅ 힌트 표시
+                                        style = MemoKingTypography.labelMedium.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    )
+                                }
+                                innerTextField()
+                            }
+                        }
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "뒤로가기")
@@ -61,7 +87,7 @@ fun NoteEditorScreen(
                     }
                     IconButton(onClick = {
                         viewModel.saveNote(noteId)
-                        navController.popBackStack() // 저장 후 뒤로가기
+                        navController.popBackStack()
                     }) {
                         Icon(Icons.Default.Check, contentDescription = "저장")
                     }
@@ -75,19 +101,9 @@ fun NoteEditorScreen(
                 .padding(paddingValues)
                 .padding(16.dp)
         ) {
-            // ✅ 제목 입력 필드 추가
-            OutlinedTextField(
-                value = noteTitle ?: "",  // ✅ Null 방지
-                onValueChange = viewModel::updateTitle,
-                label = { Text(stringResource(R.string.new_note)) },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
             // ✅ 본문 내용 입력 필드
             BasicTextField(
-                value = noteText ?: "", // ✅ Null 방지
+                value = noteText,
                 onValueChange = viewModel::updateText,
                 modifier = Modifier.fillMaxSize()
             )
@@ -102,7 +118,7 @@ fun NoteEditorScreen(
                 confirmButton = {
                     Button(onClick = {
                         showOcrDialog = false
-                        cameraLauncher.launch(Uri.EMPTY) // ✅ 카메라 실행
+                        cameraLauncher.launch(Uri.EMPTY)
                     }) {
                         Icon(Icons.Default.Camera, contentDescription = null)
                         Text(stringResource(R.string.ocr_camera_button))
@@ -111,7 +127,7 @@ fun NoteEditorScreen(
                 dismissButton = {
                     Button(onClick = {
                         showOcrDialog = false
-                        galleryLauncher.launch("image/*") // ✅ 갤러리 실행
+                        galleryLauncher.launch("image/*")
                     }) {
                         Icon(Icons.Default.PhotoLibrary, contentDescription = null)
                         Text(stringResource(R.string.ocr_gallery_button))

@@ -30,8 +30,6 @@ fun AppNavGraph(
                 onBackClick = { navController.popBackStack() },
                 onAddFolderClick = { navController.navigate("folder_edit/null") },
                 onAddNoteClick = { navController.navigate("note_edit/null") },
-                onDeleteFolderClick = { folderId -> viewModel.onDeleteFolder(folderId) },
-                onDeleteNoteClick = { noteId -> viewModel.onDeleteNote(noteId) },
                 currentFolderId = null
             )
         }

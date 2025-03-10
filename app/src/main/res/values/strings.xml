@@ -11,7 +11,8 @@
     <string name="delete">삭제</string>
     <string name="confirm">확인</string>
     <string name="cancel">취소</string>
-    <string name="no_data_area">No Folders or Notes Available</string>
+    <string name="no_folders">폴더가 없습니다.\n새 폴더를 만들어보세요!</string>
+    <string name="no_notes">노트가 없습니다.\n새로운 노트를 추가해보세요!</string>
 
     <!-- Alerts -->
     <string name="delete_note_confirm">정말 이 노트를 삭제하시겠습니까?</string>
@@ -22,10 +23,18 @@
     <string name="ocr_dialog_message">사진을 찍거나 갤러리에서 선택하여 텍스트를 추출하세요.</string>
     <string name="ocr_camera_button">카메라로 촬영</string>
     <string name="ocr_gallery_button">갤러리에서 선택</string>
+    <string name="delete_confirmation">삭제 확인</string>
+    <string name="delete_warning">정말로 이 항목을 삭제하시겠습니까?</string>
+    <string name="yes">예</string>
+    <string name="no">아니요</string>
 
     <!-- 📌 NoteEditor 관련 -->
     <string name="image_added">이미지 추가됨: %1$s</string>
     <string name="no_image_selected">이미지를 선택하지 않았습니다.</string>
     <string name="camera_capture_success">카메라 촬영 완료</string>
     <string name="camera_capture_failed">카메라 촬영 실패</string>
+    <string name="save_confirmation">저장 확인</string>
+    <string name="save_warning">변경사항을 저장하시겠습니까?</string>
+    <string name="enter_note_title">노트 제목을 입력하세요</string>
+
 </resources>

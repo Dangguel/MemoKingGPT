@@ -1,5 +1,9 @@
 package kr.co.dangguel.memokinggpt.presentation.viewmodel
 
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -7,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kr.co.dangguel.memokinggpt.R
 import kr.co.dangguel.memokinggpt.data.local.entity.FolderEntity
 import kr.co.dangguel.memokinggpt.data.local.entity.NoteEntity
 import kr.co.dangguel.memokinggpt.domain.usecase.FolderUseCase
