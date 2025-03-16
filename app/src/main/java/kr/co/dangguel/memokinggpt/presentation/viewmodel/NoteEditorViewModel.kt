@@ -5,6 +5,9 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.mlkit.vision.text.TextRecognition
+import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,8 +28,11 @@ class NoteEditorViewModel @Inject constructor(
     private val _text = MutableStateFlow("")
     val text = _text.asStateFlow()
 
-    private val _showSaveDialog = MutableStateFlow(false)
-    val showSaveDialog = _showSaveDialog.asStateFlow()
+    private val _selectedLanguage = MutableStateFlow("ko") // 기본값: 한국어
+    val selectedLanguage = _selectedLanguage.asStateFlow()
+
+    private val _ocrResult = MutableStateFlow("")
+    val ocrResult = _ocrResult.asStateFlow()
 
     private var currentNoteId: Long? = null
 
@@ -36,6 +42,10 @@ class NoteEditorViewModel @Inject constructor(
 
     fun updateText(newText: String) {
         _text.value = newText
+    }
+
+    fun setOcrLanguage(language: String) {
+        _selectedLanguage.value = language
     }
 
     fun loadNote(noteId: Long) {
@@ -49,23 +59,9 @@ class NoteEditorViewModel @Inject constructor(
         }
     }
 
-    fun requestSaveNote() {
-        _showSaveDialog.value = true
-    }
-
-    fun confirmSaveNote() {
-        _showSaveDialog.value = false
-        saveNote(currentNoteId)
-    }
-
-    fun cancelSaveNote() {
-        _showSaveDialog.value = false
-    }
-
     fun saveNote(noteId: Long?) {
         viewModelScope.launch {
             if (noteId == null) {
-                // 새 노트 저장
                 noteUseCase.insertNote(
                     NoteEntity(
                         title = _title.value,
@@ -73,7 +69,6 @@ class NoteEditorViewModel @Inject constructor(
                     )
                 )
             } else {
-                // 기존 노트 업데이트
                 noteUseCase.updateNote(
                     NoteEntity(
                         id = noteId,
@@ -85,17 +80,24 @@ class NoteEditorViewModel @Inject constructor(
         }
     }
 
-    fun handleGalleryResult(context: Context, uri: Uri?) {
-        uri?.let {
-            _text.value += "\n" + context.getString(R.string.image_added, uri.toString())
-        } ?: Toast.makeText(context, context.getString(R.string.no_image_selected), Toast.LENGTH_SHORT).show()
-    }
-
-    fun handleCameraResult(context: Context, success: Boolean) {
-        if (success) {
-            _text.value += "\n" + context.getString(R.string.camera_capture_success)
+    fun processOcrImage(context: Context, imageUri: Uri) {
+        val recognizer = if (_selectedLanguage.value == "ko") {
+            TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
         } else {
-            Toast.makeText(context, context.getString(R.string.camera_capture_failed), Toast.LENGTH_SHORT).show()
+            TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+        }
+
+        try {
+            val image = com.google.mlkit.vision.common.InputImage.fromFilePath(context, imageUri)
+            recognizer.process(image)
+                .addOnSuccessListener { result ->
+                    _ocrResult.value = result.text
+                }
+                .addOnFailureListener {
+                    Toast.makeText(context, context.getString(R.string.ocr_failed), Toast.LENGTH_SHORT).show()
+                }
+        } catch (e: Exception) {
+            Toast.makeText(context, context.getString(R.string.ocr_failed), Toast.LENGTH_SHORT).show()
         }
     }
 }

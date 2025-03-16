@@ -36,5 +36,13 @@
     <string name="save_confirmation">저장 확인</string>
     <string name="save_warning">변경사항을 저장하시겠습니까?</string>
     <string name="enter_note_title">노트 제목을 입력하세요</string>
+    <string name="ocr_select_language">OCR 언어 선택</string>
+    <string name="ocr_select_language_description">인식할 언어를 선택하세요.</string>
+    <string name="korean">한국어</string>
+    <string name="english">영어</string>
+    <string name="ocr_failed">OCR 인식에 실패했습니다.</string>
+    <string name="ocr_result">OCR 결과</string>
+    <string name="apply">적용</string>
+    <string name="close">닫기</string>
 
 </resources>

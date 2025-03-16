@@ -87,7 +87,8 @@ dependencies {
     implementation("com.google.android.gms:play-services-ads:22.4.0")
     
     // MLkit (OCR) 및 google play service용 코루틴 확장 함수
-    implementation("com.google.mlkit:text-recognition:16.0.0")
+    implementation("com.google.mlkit:text-recognition:16.0.1")
+    implementation("com.google.mlkit:text-recognition-korean:16.0.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.4")
 
     // splash screen

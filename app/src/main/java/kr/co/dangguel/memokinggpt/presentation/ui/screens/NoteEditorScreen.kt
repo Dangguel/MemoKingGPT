@@ -1,17 +1,16 @@
 package kr.co.dangguel.memokinggpt.presentation.ui.screens
 
 import android.net.Uri
+import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -29,46 +28,53 @@ fun NoteEditorScreen(
 ) {
     val context = LocalContext.current
     var showOcrDialog by remember { mutableStateOf(false) }
+    var showLanguageDialog by remember { mutableStateOf(false) }
+    var selectedLanguage by remember { mutableStateOf("ko") } // ✅ OCR 언어 선택
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true) // ✅ BottomSheet 상태 관리
+    var showBottomSheet by remember { mutableStateOf(false) }
 
-    // ✅ 기존 노트 로드
     LaunchedEffect(noteId) {
         noteId?.let { viewModel.loadNote(it) }
     }
 
-    // ✅ 상태 값들 (노트 제목 & 내용)
     val noteTitle by viewModel.title.collectAsState()
     val noteText by viewModel.text.collectAsState()
+    val ocrResult by viewModel.ocrResult.collectAsState() // ✅ OCR 결과 상태값
 
-    // 📌 갤러리 런처 (이미지 선택)
     val galleryLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-        viewModel.handleGalleryResult(context, uri)
+        if (uri != null) {
+            imageUri = uri
+            viewModel.processOcrImage(context, uri) // ✅ OCR 실행
+            showBottomSheet = true // ✅ OCR 실행 후 BottomSheet 표시
+        }
     }
 
-    // 📌 카메라 런처 (사진 촬영)
     val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
-        viewModel.handleCameraResult(context, success)
+        if (success) {
+            imageUri?.let {
+                viewModel.processOcrImage(context, it)
+                showBottomSheet = true // ✅ OCR 실행 후 BottomSheet 표시
+            }
+        }
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    // ✅ 테두리 없는 제목 입력 필드 (BasicTextField 사용)
                     BasicTextField(
                         value = noteTitle,
                         onValueChange = viewModel::updateTitle,
-                        textStyle = MemoKingTypography.labelLarge,
                         modifier = Modifier.fillMaxWidth(),
                         decorationBox = { innerTextField ->
                             Box(
-                                modifier = Modifier
-                                    .padding(vertical = 4.dp)
-                                    .fillMaxWidth()
+                                modifier = Modifier.padding(vertical = 4.dp)
                             ) {
                                 if (noteTitle.isEmpty()) {
                                     Text(
-                                        text = stringResource(R.string.enter_note_title), // ✅ 힌트 표시
-                                        style = MemoKingTypography.labelMedium.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                        text = stringResource(R.string.enter_note_title),
+                                        style = MemoKingTypography.labelLarge
                                     )
                                 }
                                 innerTextField()
@@ -82,8 +88,8 @@ fun NoteEditorScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { showOcrDialog = true }) {
-                        Icon(Icons.Default.Camera, contentDescription = "OCR 기능")
+                    IconButton(onClick = { showLanguageDialog = true }) { // ✅ OCR 실행 전에 언어 선택 다이얼로그 표시
+                        Icon(Icons.Default.Camera, contentDescription = "OCR 실행")
                     }
                     IconButton(onClick = {
                         viewModel.saveNote(noteId)
@@ -101,39 +107,114 @@ fun NoteEditorScreen(
                 .padding(paddingValues)
                 .padding(16.dp)
         ) {
-            // ✅ 본문 내용 입력 필드
             BasicTextField(
                 value = noteText,
                 onValueChange = viewModel::updateText,
                 modifier = Modifier.fillMaxSize()
             )
         }
+    }
 
-        // 📌 OCR 선택 다이얼로그
-        if (showOcrDialog) {
-            AlertDialog(
-                onDismissRequest = { showOcrDialog = false },
-                title = { Text(stringResource(R.string.ocr_dialog_title)) },
-                text = { Text(stringResource(R.string.ocr_dialog_message)) },
-                confirmButton = {
-                    Button(onClick = {
-                        showOcrDialog = false
-                        cameraLauncher.launch(Uri.EMPTY)
-                    }) {
-                        Icon(Icons.Default.Camera, contentDescription = null)
-                        Text(stringResource(R.string.ocr_camera_button))
+    // 🔹 OCR 언어 선택 다이얼로그
+    if (showLanguageDialog) {
+        AlertDialog(
+            onDismissRequest = { showLanguageDialog = false },
+            title = { Text(stringResource(R.string.ocr_select_language)) },
+            text = { Text(stringResource(R.string.ocr_select_language_description)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    selectedLanguage = "ko" // ✅ 한국어 선택
+                    showLanguageDialog = false
+                    showOcrDialog = true // ✅ OCR 선택 다이얼로그 표시
+                }) {
+                    Text(stringResource(R.string.korean))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    selectedLanguage = "en" // ✅ 영어 선택
+                    showLanguageDialog = false
+                    showOcrDialog = true // ✅ OCR 선택 다이얼로그 표시
+                }) {
+                    Text(stringResource(R.string.english))
+                }
+            }
+        )
+    }
+
+    // 🔹 OCR 이미지 선택 다이얼로그
+    if (showOcrDialog) {
+        AlertDialog(
+            onDismissRequest = { showOcrDialog = false },
+            title = { Text(stringResource(R.string.ocr_dialog_title)) },
+            text = { Text(stringResource(R.string.ocr_dialog_message)) },
+            confirmButton = {
+                Button(onClick = {
+                    showOcrDialog = false
+                    galleryLauncher.launch("image/*")
+                }) {
+                    Icon(Icons.Default.PhotoLibrary, contentDescription = null)
+                    Text(stringResource(R.string.ocr_gallery_button))
+                }
+            },
+            dismissButton = {
+                Button(onClick = {
+                    showOcrDialog = false
+                    imageUri = context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null)
+                    cameraLauncher.launch(imageUri ?: Uri.EMPTY) // ✅ null 방지
+                }) {
+                    Icon(Icons.Default.Camera, contentDescription = null)
+                    Text(stringResource(R.string.ocr_camera_button))
+                }
+            }
+        )
+    }
+
+    // 🔹 OCR 결과 BottomSheet
+    if (showBottomSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showBottomSheet = false },
+            sheetState = sheetState
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.ocr_result),
+                    style = MaterialTheme.typography.headlineSmall
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                var editedText by remember { mutableStateOf(ocrResult) } // ✅ OCR 결과 수정 가능하도록 상태 관리
+                BasicTextField(
+                    value = editedText,
+                    onValueChange = { editedText = it },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .padding(8.dp)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    horizontalArrangement = Arrangement.End,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    TextButton(onClick = { showBottomSheet = false }) {
+                        Text(stringResource(R.string.close))
                     }
-                },
-                dismissButton = {
+                    Spacer(modifier = Modifier.width(8.dp))
                     Button(onClick = {
-                        showOcrDialog = false
-                        galleryLauncher.launch("image/*")
+                        viewModel.updateText(editedText) // ✅ OCR 결과를 노트에 반영
+                        showBottomSheet = false
                     }) {
-                        Icon(Icons.Default.PhotoLibrary, contentDescription = null)
-                        Text(stringResource(R.string.ocr_gallery_button))
+                        Text(stringResource(R.string.apply))
                     }
                 }
-            )
+            }
         }
     }
 }

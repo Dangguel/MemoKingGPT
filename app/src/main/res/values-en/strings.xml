@@ -36,5 +36,13 @@
     <string name="save_confirmation">Save Confirmation</string>
     <string name="save_warning">Do you want to save changes?</string>
     <string name="enter_note_title">Enter note title here</string>
+    <string name="ocr_select_language">Select OCR Language</string>
+    <string name="ocr_select_language_description">Choose the language to recognize.</string>
+    <string name="korean">Korean</string>
+    <string name="english">English</string>
+    <string name="ocr_failed">OCR recognition failed.</string>
+    <string name="ocr_result">OCR Result</string>
+    <string name="apply">Apply</string>
+    <string name="close">Close</string>
 
 </resources>
