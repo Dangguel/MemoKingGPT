@@ -62,14 +62,16 @@
 
     <string name="summary_core_title">Core Summary</string>
     <string name="summary_core_desc">Summarize key points from a long text as bullet points</string>
-
     <string name="summary_full_title">Full Summary</string>
     <string name="summary_full_desc">Briefly summarize the entire content into one paragraph</string>
-
     <string name="summary_list_title">List Conversion</string>
     <string name="summary_list_desc">Convert key points into a bullet list</string>
-
     <string name="summary_action_title">Action Plan</string>
     <string name="summary_action_desc">Extract actionable items from the content</string>
+
+    <string name="update_required_title">Update Required</string>
+    <string name="update_required_message">A new version is available.\nPlease update to continue using the app smoothly.</string>
+    <string name="update_now">Update Now</string>
+
 
 </resources>

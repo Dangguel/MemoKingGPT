@@ -62,14 +62,15 @@
 
     <string name="summary_core_title">핵심 정리</string>
     <string name="summary_core_desc">긴 글의 핵심을 bullet 포인트로 요약</string>
-
     <string name="summary_full_title">전체 요약</string>
     <string name="summary_full_desc">전체 내용을 한 단락으로 간결히 요약</string>
-
     <string name="summary_list_title">목록 변환</string>
     <string name="summary_list_desc">주요 내용을 리스트 항목으로 변환</string>
-
     <string name="summary_action_title">액션 플랜</string>
     <string name="summary_action_desc">해야 할 일을 액션 아이템으로 추출</string>
+
+    <string name="update_required_title">업데이트 필요</string>
+    <string name="update_required_message">최신 버전이 출시되었습니다.\n원활한 사용을 위해 지금 업데이트 해주세요.</string>
+    <string name="update_now">업데이트 하기</string>
 
 </resources>

@@ -1,11 +1,14 @@
 package kr.co.dangguel.memokinggpt.presentation.ui.screens
 
+import android.app.Activity
 import android.net.Uri
 import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -17,7 +20,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kr.co.dangguel.memokinggpt.R
+import kr.co.dangguel.memokinggpt.presentation.ads.AdManager
 import kr.co.dangguel.memokinggpt.presentation.ui.components.ResultBottomSheet
+import kr.co.dangguel.memokinggpt.presentation.util.InAppReviewManager
 import kr.co.dangguel.memokinggpt.presentation.viewmodel.NoteEditorViewModel
 import kr.co.dangguel.memokinggpt.ui.theme.MemoKingTypography
 
@@ -50,6 +55,14 @@ fun NoteEditorScreen(
     val noteText by viewModel.text.collectAsState()
     val ocrResult by viewModel.ocrResult.collectAsState()
     val summaryResult by viewModel.summaryResult.collectAsState() // ✅ 요약 결과
+    val showAdTrigger by viewModel.showAdTrigger.collectAsState()
+
+    LaunchedEffect(showAdTrigger) {
+        if (showAdTrigger) {
+            AdManager.showAd(context as Activity)
+            viewModel.resetAdTrigger()  // ✅ 트리거 리셋 함수 따로 만들어주기
+        }
+    }
 
     val galleryLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         uri?.let {
@@ -76,12 +89,17 @@ fun NoteEditorScreen(
                         value = noteTitle,
                         onValueChange = viewModel::updateTitle,
                         modifier = Modifier.fillMaxWidth(),
+                        textStyle = MemoKingTypography.labelLarge.copy(
+                            color = MaterialTheme.colorScheme.onBackground
+                        ),
                         decorationBox = { innerTextField ->
                             Box(modifier = Modifier.padding(vertical = 4.dp)) {
                                 if (noteTitle.isEmpty()) {
                                     Text(
                                         text = stringResource(R.string.enter_note_title),
-                                        style = MemoKingTypography.labelLarge
+                                        style = MemoKingTypography.labelLarge.copy(
+                                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+                                        )
                                     )
                                 }
                                 innerTextField()
@@ -103,6 +121,8 @@ fun NoteEditorScreen(
                     }
                     IconButton(onClick = {
                         viewModel.saveNote(noteId,folderId)
+                        val activity = context as? Activity
+                        activity?.let { InAppReviewManager.launchReviewFlow(it) }
                         navController.popBackStack()
                     }) {
                         Icon(Icons.Default.Check, contentDescription = "저장")
@@ -111,16 +131,24 @@ fun NoteEditorScreen(
             )
         }
     ) { paddingValues ->
+        val scrollState = rememberScrollState()
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
                 .padding(16.dp)
+                .verticalScroll(scrollState)
+                .imePadding() // ✅ 키보드가 올라왔을 때 가려지지 않게 처리
         ) {
             BasicTextField(
                 value = noteText,
                 onValueChange = viewModel::updateText,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(), // 스크롤 안에서 길어질 수 있도록
+                textStyle = MemoKingTypography.bodyLarge.copy(
+                    color = MaterialTheme.colorScheme.onBackground
+                )
             )
         }
     }

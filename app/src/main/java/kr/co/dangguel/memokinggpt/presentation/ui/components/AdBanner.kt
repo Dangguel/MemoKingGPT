@@ -39,8 +39,8 @@ fun AdBanner(context: Context) {
         factory = {
             AdView(context).apply {
                 setAdSize(AdSize.BANNER)
-                /*adUnitId = "ca-app-pub-8126188547687864/2940195976"*/ // 내 id
-                adUnitId = "ca-app-pub-3940256099942544/6300978111" // test 광고
+                adUnitId = "ca-app-pub-8126188547687864/2940195976" // 내 id
+                //adUnitId = "ca-app-pub-3940256099942544/6300978111" // test 광고
                 val adRequest = AdRequest.Builder().build()
                 adListener = object : AdListener() {
                     override fun onAdLoaded() {

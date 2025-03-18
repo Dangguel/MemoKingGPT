@@ -111,4 +111,12 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     // JSON 변환을 위한 GSON Converter
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    // app update lib
+    implementation("com.google.android.play:app-update:2.1.0")
+    implementation("com.google.android.play:app-update-ktx:2.1.0")
+
+    // in-app Review
+    implementation("com.google.android.play:review:2.0.2")
+    implementation("com.google.android.play:review-ktx:2.0.2")
 }

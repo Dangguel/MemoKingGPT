@@ -19,6 +19,8 @@ import kr.co.dangguel.memokinggpt.data.remote.model.GptMessage
 import kr.co.dangguel.memokinggpt.data.remote.model.GptRequest
 import kr.co.dangguel.memokinggpt.domain.usecase.GptUseCase
 import kr.co.dangguel.memokinggpt.domain.usecase.NoteUseCase
+import kr.co.dangguel.memokinggpt.presentation.ads.AdManager
+import kr.co.dangguel.memokinggpt.util.PreferenceManager
 import java.util.Locale
 import javax.inject.Inject
 
@@ -51,6 +53,9 @@ class NoteEditorViewModel @Inject constructor(
 
     private val _summaryResult = MutableStateFlow("")
     val summaryResult = _summaryResult.asStateFlow()
+
+    private val _showAdTrigger = MutableStateFlow(false)
+    val showAdTrigger = _showAdTrigger.asStateFlow()
 
     private var currentNoteId: Long? = null
 
@@ -149,6 +154,13 @@ class NoteEditorViewModel @Inject constructor(
             }
 
             try {
+                val prefs = PreferenceManager
+                prefs.increaseSummaryCount(context)
+                if (prefs.getSummaryCount(context) >= 2) {
+                    _showAdTrigger.value = true
+                    prefs.resetSummaryCount(context)
+                }
+
                 val response = gptUseCase.getSummary(
                     GptRequest(
                         messages = listOf(GptMessage(content = prompt))
@@ -161,5 +173,9 @@ class NoteEditorViewModel @Inject constructor(
                 _isSummaryLoading.value = false
             }
         }
+    }
+
+    fun resetAdTrigger() {
+        _showAdTrigger.value = false
     }
 }

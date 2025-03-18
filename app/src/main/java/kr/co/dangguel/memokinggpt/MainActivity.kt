@@ -9,7 +9,9 @@ import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.RequestConfiguration
 import dagger.hilt.android.AndroidEntryPoint
+import kr.co.dangguel.memokinggpt.presentation.ads.AdManager
 import kr.co.dangguel.memokinggpt.presentation.ui.navigation.AppNavGraph
+import kr.co.dangguel.memokinggpt.presentation.util.UpdateManager
 import kr.co.dangguel.memokinggpt.presentation.viewmodel.MainViewModel
 import kr.co.dangguel.memokinggpt.ui.theme.MemoKingGPTTheme
 import kr.co.dangguel.memokinggpt.util.ApiKeyProvider
@@ -29,5 +31,8 @@ class MainActivity : ComponentActivity() {
                 AppNavGraph(navController = navController, viewModel = viewModel)
             }
         }
+
+        AdManager.loadAd(this)
+        UpdateManager.checkAndRedirectToStore(this)
     }
 }
