@@ -45,4 +45,31 @@
     <string name="apply">Apply</string>
     <string name="close">Close</string>
 
+    <!-- 📌 gpt summary related -->
+    <string name="summary_dialog_title">Select summary type</string>
+    <string name="summary_dialog_message">Please choose the type of summary you want.</string>
+    <string name="core_summary">Key Points</string>
+    <string name="full_summary">Full Summary</string>
+    <string name="list_conversion">List Conversion</string>
+    <string name="action_plan">Action Plan</string>
+    <string name="summary_result">GPT Summary Result</string>
+
+    <!-- GPT Summary Prompts -->
+    <string name="prompt_core_summary">Summarize the following content with key bullet points (concise):\n%s</string>
+    <string name="prompt_full_summary">Provide a concise summary of the following content (concise):\n%s</string>
+    <string name="prompt_list_conversion">Convert the following content into a bullet list (concise):\n%s</string>
+    <string name="prompt_action_plan">Extract actionable tasks from the following content (concise):\n%s</string>
+
+    <string name="summary_core_title">Core Summary</string>
+    <string name="summary_core_desc">Summarize key points from a long text as bullet points</string>
+
+    <string name="summary_full_title">Full Summary</string>
+    <string name="summary_full_desc">Briefly summarize the entire content into one paragraph</string>
+
+    <string name="summary_list_title">List Conversion</string>
+    <string name="summary_list_desc">Convert key points into a bullet list</string>
+
+    <string name="summary_action_title">Action Plan</string>
+    <string name="summary_action_desc">Extract actionable items from the content</string>
+
 </resources>

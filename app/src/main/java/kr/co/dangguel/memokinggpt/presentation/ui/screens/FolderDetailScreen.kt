@@ -57,7 +57,7 @@ fun FolderDetailScreen(
                 horizontalArrangement = Arrangement.Center
             ) {
                 OutlinedButton(
-                    onClick = { navController.navigate("note_edit/null") }, // ✅ 노트 추가 화면으로 이동
+                    onClick = { navController.navigate("note_edit?noteId=null&folderId=${folderId ?: -1}") }, // ✅ 노트 추가 화면으로 이동
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Icon(

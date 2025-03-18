@@ -25,11 +25,11 @@ fun AppNavGraph(
                     navController.navigate("folderDetail/$folderId") // ✅ 직접 네비게이션 호출
                 },
                 onNoteClick = { noteId ->
-                    navController.navigate("note_edit/$noteId") // ✅ 직접 네비게이션 호출
+                    navController.navigate("note_edit?noteId=$noteId&folderId=-1")
                 },
                 onBackClick = { navController.popBackStack() },
                 onAddFolderClick = { navController.navigate("folder_edit/null") },
-                onAddNoteClick = { navController.navigate("note_edit/null") },
+                onAddNoteClick = { navController.navigate("note_edit?noteId=null&folderId=-1") },
                 currentFolderId = null
             )
         }
@@ -42,19 +42,21 @@ fun AppNavGraph(
                 folderId = folderId,
                 navController = navController,
                 onNoteClick = { noteId ->
-                    navController.navigate("note_edit/$noteId") // ✅ 직접 네비게이션 호출
+                    navController.navigate("note_edit?noteId=$noteId&folderId=${folderId}") // ✅ 직접 네비게이션 호출
                 },
                 onDeleteNoteClick = { noteId -> viewModel.onDeleteNote(noteId) }
             )
         }
 
-        composable("note_edit/{noteId}") { backStackEntry ->
+        composable("note_edit?noteId={noteId}&folderId={folderId}") { backStackEntry ->
             val noteId = backStackEntry.arguments?.getString("noteId")?.toLongOrNull()
+            val folderId = backStackEntry.arguments?.getString("folderId")?.toLongOrNull()
             val noteEditorViewModel: NoteEditorViewModel = hiltViewModel()
 
             NoteEditorScreen(
                 viewModel = noteEditorViewModel,
                 noteId = noteId,
+                folderId = folderId, // ✅ folderId도 전달
                 navController = navController
             )
         }

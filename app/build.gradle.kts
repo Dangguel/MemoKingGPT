@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -20,6 +22,16 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        // ✅ local.properties 값 가져오기
+        val localProperties = Properties().apply {
+            load(rootProject.file("local.properties").inputStream())
+        }
+        val decryptionKey = localProperties.getProperty("DECRYPTION_KEY")
+        val decryptionSalt = localProperties.getProperty("DECRYPTION_SALT")
+
+        buildConfigField("String", "DECRYPTION_KEY", "\"$decryptionKey\"")
+        buildConfigField("String", "DECRYPTION_SALT", "\"$decryptionSalt\"")
     }
 
     buildTypes {
@@ -39,6 +51,7 @@ android {
         jvmTarget = "17"
     }
     buildFeatures {
+        buildConfig = true
         compose = true
     }
     composeOptions {
@@ -93,4 +106,9 @@ dependencies {
 
     // splash screen
     implementation("androidx.core:core-splashscreen:1.0.1")
+
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    // JSON 변환을 위한 GSON Converter
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 }

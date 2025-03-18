@@ -19,3 +19,7 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+-keepclassmembers class kr.co.dangguel.memokinggpt.util.** { *; }
+-keepclassmembers class kr.co.dangguel.memokinggpt.data.api.** { *; }
+-keepnames class javax.crypto.** { *; }

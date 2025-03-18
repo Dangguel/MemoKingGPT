@@ -1,6 +1,7 @@
 package kr.co.dangguel.memokinggpt
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -11,6 +12,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import kr.co.dangguel.memokinggpt.presentation.ui.navigation.AppNavGraph
 import kr.co.dangguel.memokinggpt.presentation.viewmodel.MainViewModel
 import kr.co.dangguel.memokinggpt.ui.theme.MemoKingGPTTheme
+import kr.co.dangguel.memokinggpt.util.ApiKeyProvider
+import kr.co.dangguel.memokinggpt.utils.EncryptionUtil
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {

@@ -10,12 +10,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kr.co.dangguel.memokinggpt.R
+import kr.co.dangguel.memokinggpt.presentation.ui.components.ResultBottomSheet
 import kr.co.dangguel.memokinggpt.presentation.viewmodel.NoteEditorViewModel
 import kr.co.dangguel.memokinggpt.ui.theme.MemoKingTypography
 
@@ -24,15 +26,21 @@ import kr.co.dangguel.memokinggpt.ui.theme.MemoKingTypography
 fun NoteEditorScreen(
     viewModel: NoteEditorViewModel,
     navController: NavController,
-    noteId: Long?
+    noteId: Long?,
+    folderId: Long?
 ) {
     val context = LocalContext.current
     var showOcrDialog by remember { mutableStateOf(false) }
     var showLanguageDialog by remember { mutableStateOf(false) }
-    var selectedLanguage by remember { mutableStateOf("ko") } // ✅ OCR 언어 선택
+    var selectedLanguage by remember { mutableStateOf("ko") }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true) // ✅ BottomSheet 상태 관리
-    var showBottomSheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val isOcrLoading by viewModel.isOcrLoading.collectAsState()
+    val isSummaryLoading by viewModel.isSummaryLoading.collectAsState()
+    var showSummaryDialog by remember { mutableStateOf(false) } // ✅ 요약 다이얼로그 표시 여부
+    var selectedSummaryType by remember { mutableStateOf("") } // ✅ 선택된 요약 타입
+    var showOcrBottomSheet by remember { mutableStateOf(false) }
+    var showSummaryBottomSheet by remember { mutableStateOf(false) }
 
     LaunchedEffect(noteId) {
         noteId?.let { viewModel.loadNote(it) }
@@ -40,13 +48,14 @@ fun NoteEditorScreen(
 
     val noteTitle by viewModel.title.collectAsState()
     val noteText by viewModel.text.collectAsState()
-    val ocrResult by viewModel.ocrResult.collectAsState() // ✅ OCR 결과 상태값
+    val ocrResult by viewModel.ocrResult.collectAsState()
+    val summaryResult by viewModel.summaryResult.collectAsState() // ✅ 요약 결과
 
     val galleryLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-        if (uri != null) {
-            imageUri = uri
-            viewModel.processOcrImage(context, uri) // ✅ OCR 실행
-            showBottomSheet = true // ✅ OCR 실행 후 BottomSheet 표시
+        uri?.let {
+            imageUri = it
+            viewModel.processOcrImage(context, it)
+            showOcrBottomSheet = true
         }
     }
 
@@ -54,7 +63,7 @@ fun NoteEditorScreen(
         if (success) {
             imageUri?.let {
                 viewModel.processOcrImage(context, it)
-                showBottomSheet = true // ✅ OCR 실행 후 BottomSheet 표시
+                showOcrBottomSheet = true
             }
         }
     }
@@ -68,9 +77,7 @@ fun NoteEditorScreen(
                         onValueChange = viewModel::updateTitle,
                         modifier = Modifier.fillMaxWidth(),
                         decorationBox = { innerTextField ->
-                            Box(
-                                modifier = Modifier.padding(vertical = 4.dp)
-                            ) {
+                            Box(modifier = Modifier.padding(vertical = 4.dp)) {
                                 if (noteTitle.isEmpty()) {
                                     Text(
                                         text = stringResource(R.string.enter_note_title),
@@ -88,11 +95,14 @@ fun NoteEditorScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { showLanguageDialog = true }) { // ✅ OCR 실행 전에 언어 선택 다이얼로그 표시
+                    IconButton(onClick = { showLanguageDialog = true }) {
                         Icon(Icons.Default.Camera, contentDescription = "OCR 실행")
                     }
+                    IconButton(onClick = { showSummaryDialog = true }) {
+                        Icon(Icons.Default.AutoAwesome, contentDescription = "요약하기")
+                    }
                     IconButton(onClick = {
-                        viewModel.saveNote(noteId)
+                        viewModel.saveNote(noteId,folderId)
                         navController.popBackStack()
                     }) {
                         Icon(Icons.Default.Check, contentDescription = "저장")
@@ -115,7 +125,6 @@ fun NoteEditorScreen(
         }
     }
 
-    // 🔹 OCR 언어 선택 다이얼로그
     if (showLanguageDialog) {
         AlertDialog(
             onDismissRequest = { showLanguageDialog = false },
@@ -123,18 +132,20 @@ fun NoteEditorScreen(
             text = { Text(stringResource(R.string.ocr_select_language_description)) },
             confirmButton = {
                 TextButton(onClick = {
-                    selectedLanguage = "ko" // ✅ 한국어 선택
+                    selectedLanguage = "ko"
+                    viewModel.setOcrLanguage("ko")
                     showLanguageDialog = false
-                    showOcrDialog = true // ✅ OCR 선택 다이얼로그 표시
+                    showOcrDialog = true
                 }) {
                     Text(stringResource(R.string.korean))
                 }
             },
             dismissButton = {
                 TextButton(onClick = {
-                    selectedLanguage = "en" // ✅ 영어 선택
+                    selectedLanguage = "en"
+                    viewModel.setOcrLanguage("en")
                     showLanguageDialog = false
-                    showOcrDialog = true // ✅ OCR 선택 다이얼로그 표시
+                    showOcrDialog = true
                 }) {
                     Text(stringResource(R.string.english))
                 }
@@ -142,7 +153,6 @@ fun NoteEditorScreen(
         )
     }
 
-    // 🔹 OCR 이미지 선택 다이얼로그
     if (showOcrDialog) {
         AlertDialog(
             onDismissRequest = { showOcrDialog = false },
@@ -161,7 +171,7 @@ fun NoteEditorScreen(
                 Button(onClick = {
                     showOcrDialog = false
                     imageUri = context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null)
-                    cameraLauncher.launch(imageUri ?: Uri.EMPTY) // ✅ null 방지
+                    cameraLauncher.launch(imageUri ?: Uri.EMPTY)
                 }) {
                     Icon(Icons.Default.Camera, contentDescription = null)
                     Text(stringResource(R.string.ocr_camera_button))
@@ -170,51 +180,95 @@ fun NoteEditorScreen(
         )
     }
 
-    // 🔹 OCR 결과 BottomSheet
-    if (showBottomSheet) {
-        ModalBottomSheet(
-            onDismissRequest = { showBottomSheet = false },
-            sheetState = sheetState
+    if (isOcrLoading || isSummaryLoading) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.ocr_result),
-                    style = MaterialTheme.typography.headlineSmall
-                )
-                Spacer(modifier = Modifier.height(8.dp))
+            CircularProgressIndicator()
+        }
+    }
 
-                var editedText by remember { mutableStateOf(ocrResult) } // ✅ OCR 결과 수정 가능하도록 상태 관리
-                BasicTextField(
-                    value = editedText,
-                    onValueChange = { editedText = it },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-                        .padding(8.dp)
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Row(
-                    horizontalArrangement = Arrangement.End,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    TextButton(onClick = { showBottomSheet = false }) {
-                        Text(stringResource(R.string.close))
+    if (showSummaryDialog) {
+        AlertDialog(
+            onDismissRequest = { showSummaryDialog = false },
+            confirmButton = { // 확인 버튼 대신 내부 Column 으로 전체 구현
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Text(
+                        text = stringResource(R.string.summary_dialog_title),
+                        style = MemoKingTypography.labelLarge,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    Text(
+                        text = stringResource(R.string.summary_dialog_message),
+                        style = MemoKingTypography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
+                        modifier = Modifier.padding(bottom = 12.dp)
+                    )
+                    val resources = context.resources
+                    val summaryOptions = listOf(
+                        resources.getString(R.string.summary_core_title) to resources.getString(R.string.summary_core_desc),
+                        resources.getString(R.string.summary_full_title) to resources.getString(R.string.summary_full_desc),
+                        resources.getString(R.string.summary_list_title) to resources.getString(R.string.summary_list_desc),
+                        resources.getString(R.string.summary_action_title) to resources.getString(R.string.summary_action_desc)
+                    )
+                    summaryOptions.forEach { (type, description) ->
+                        OutlinedButton(
+                            onClick = {
+                                showSummaryDialog = false
+                                viewModel.requestSummary(context, type)
+                                showSummaryBottomSheet = true
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.Start,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(text = type, style = MemoKingTypography.labelLarge)
+                                Text(
+                                    text = description,
+                                    style = MemoKingTypography.labelSmall.copy(
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                )
+                            }
+                        }
                     }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Button(onClick = {
-                        viewModel.updateText(editedText) // ✅ OCR 결과를 노트에 반영
-                        showBottomSheet = false
-                    }) {
-                        Text(stringResource(R.string.apply))
+                    Spacer(modifier = Modifier.height(8.dp))
+                    TextButton(
+                        onClick = { showSummaryDialog = false },
+                        modifier = Modifier.align(Alignment.End)
+                    ) {
+                        Text(stringResource(R.string.close))
                     }
                 }
             }
-        }
+        )
+    }
+
+    if (showOcrBottomSheet) {
+        ResultBottomSheet(
+            title = stringResource(R.string.ocr_result),
+            initialContent = ocrResult,
+            onApply = { resultText ->
+                val currentText = viewModel.text.value
+                val newText = if (currentText.isNotBlank()) "$currentText\n\n$resultText" else resultText
+                viewModel.updateText(newText)
+            },
+            onDismiss = { showOcrBottomSheet = false }
+        )
+    }
+
+    if (showSummaryBottomSheet) {
+        ResultBottomSheet(
+            title = stringResource(R.string.summary_result),
+            initialContent = summaryResult,
+            onApply = { resultText ->
+                val currentText = viewModel.text.value
+                val newText = if (currentText.isNotBlank()) "$currentText\n\n$resultText" else resultText
+                viewModel.updateText(newText)
+            },
+            onDismiss = { showSummaryBottomSheet = false }
+        )
     }
 }

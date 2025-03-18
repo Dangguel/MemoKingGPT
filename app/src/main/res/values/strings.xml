@@ -45,4 +45,31 @@
     <string name="apply">적용</string>
     <string name="close">닫기</string>
 
+    <!-- 📌 gpt 요약 관련 -->
+    <string name="summary_dialog_title">요약 방식 선택</string>
+    <string name="summary_dialog_message">원하는 요약 형태를 선택하세요.</string>
+    <string name="core_summary">핵심 정리</string>
+    <string name="full_summary">전체 요약</string>
+    <string name="list_conversion">목록 변환</string>
+    <string name="action_plan">액션 플랜</string>
+    <string name="summary_result">GPT 요약 결과</string>
+
+    <!-- GPT 요약 프롬프트 -->
+    <string name="prompt_core_summary">다음 내용을 bullet 포인트로 핵심 정리해줘 (간결하게):\n%s</string>
+    <string name="prompt_full_summary">다음 내용을 간략하게 요약해줘 (간결하게):\n%s</string>
+    <string name="prompt_list_conversion">다음 내용을 항목 리스트 형식으로 변환해줘 (간결하게):\n%s</string>
+    <string name="prompt_action_plan">다음 내용에서 해야 할 일을 액션 플랜으로 정리해줘 (간결하게):\n%s</string>
+
+    <string name="summary_core_title">핵심 정리</string>
+    <string name="summary_core_desc">긴 글의 핵심을 bullet 포인트로 요약</string>
+
+    <string name="summary_full_title">전체 요약</string>
+    <string name="summary_full_desc">전체 내용을 한 단락으로 간결히 요약</string>
+
+    <string name="summary_list_title">목록 변환</string>
+    <string name="summary_list_desc">주요 내용을 리스트 항목으로 변환</string>
+
+    <string name="summary_action_title">액션 플랜</string>
+    <string name="summary_action_desc">해야 할 일을 액션 아이템으로 추출</string>
+
 </resources>

@@ -54,7 +54,11 @@ fun MainScreen(
                 onBackClick = onBackClick
             )
         },
-        bottomBar = { AdBanner(context) },
+        bottomBar = {
+            Box(modifier = Modifier.padding(bottom = 16.dp)) {
+                AdBanner(context)
+            }
+        },
     ) { paddingValues ->
         Column(
             modifier = Modifier
