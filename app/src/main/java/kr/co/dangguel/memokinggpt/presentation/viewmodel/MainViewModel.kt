@@ -73,7 +73,8 @@ class MainViewModel @Inject constructor(
                         NoteEntity(folderId = folderIds[0], title = "Meeting Notes", content = "Discuss project timeline."),
                         NoteEntity(folderId = folderIds[1], title = "Grocery List", content = "Buy milk, eggs, and bread."),
                         NoteEntity(folderId = folderIds[2], title = "App Ideas", content = "Create an AI-powered note-taking app."),
-                        NoteEntity(folderId = null, title = "General Note", content = "This note is not inside any folder.") // ✅ 폴더 없는 노트 추가
+                        NoteEntity(folderId = null, title = "How to Use", content = "Tap the camera icon at the top to select an image and extract text easily.\n" +
+                                "Tap the star icon at the top to experience the AI-powered summarization feature.") // ✅ 폴더 없는 노트 추가
                     )
                     defaultNotes.forEach { noteUseCase.insertNote(it) }
                 }
