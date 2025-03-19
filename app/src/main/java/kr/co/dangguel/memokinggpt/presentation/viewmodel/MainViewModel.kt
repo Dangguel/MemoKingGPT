@@ -1,5 +1,6 @@
 package kr.co.dangguel.memokinggpt.presentation.viewmodel
 
+import android.content.Context
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -7,6 +8,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -16,10 +18,12 @@ import kr.co.dangguel.memokinggpt.data.local.entity.FolderEntity
 import kr.co.dangguel.memokinggpt.data.local.entity.NoteEntity
 import kr.co.dangguel.memokinggpt.domain.usecase.FolderUseCase
 import kr.co.dangguel.memokinggpt.domain.usecase.NoteUseCase
+import kr.co.dangguel.memokinggpt.util.PreferenceManager
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val folderUseCase: FolderUseCase,
     private val noteUseCase: NoteUseCase
 ) : ViewModel() {
@@ -49,11 +53,11 @@ class MainViewModel @Inject constructor(
      */
     private fun insertDummyData() {
         viewModelScope.launch(Dispatchers.IO) {
-            val existingFolders = folderUseCase.getRootFolders().firstOrNull() ?: emptyList()
-            val existingNotes = noteUseCase.getAllNotes().firstOrNull() ?: emptyList()
+            val prefs = PreferenceManager.getPrefs(context)
+            val isFirstLaunch = prefs.getBoolean("isFirstLaunch", true)
 
             // ✅ 폴더 & 노트가 없는 경우에만 기본 데이터 삽입
-            if (existingFolders.isEmpty() && existingNotes.isEmpty()) {
+            if (isFirstLaunch) {
                 val folderIds = mutableListOf<Long>()
 
                 // ✅ 폴더 삽입 후 정확한 ID 가져오기
@@ -73,11 +77,12 @@ class MainViewModel @Inject constructor(
                         NoteEntity(folderId = folderIds[0], title = "Meeting Notes", content = "Discuss project timeline."),
                         NoteEntity(folderId = folderIds[1], title = "Grocery List", content = "Buy milk, eggs, and bread."),
                         NoteEntity(folderId = folderIds[2], title = "App Ideas", content = "Create an AI-powered note-taking app."),
-                        NoteEntity(folderId = null, title = "How to Use", content = "Tap the camera icon at the top to select an image and extract text easily.\n" +
+                        NoteEntity(folderId = null, title = "How to Use", content = "Tap the camera icon at the top to select an image and extract text easily.\n\n" +
                                 "Tap the star icon at the top to experience the AI-powered summarization feature.") // ✅ 폴더 없는 노트 추가
                     )
                     defaultNotes.forEach { noteUseCase.insertNote(it) }
                 }
+                prefs.edit().putBoolean("isFirstLaunch", false).apply()
             }
         }
     }

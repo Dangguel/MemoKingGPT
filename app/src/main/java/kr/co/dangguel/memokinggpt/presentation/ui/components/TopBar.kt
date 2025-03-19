@@ -36,11 +36,6 @@ fun TopBar(
                     Icon(Icons.Filled.ArrowBack, contentDescription = "뒤로 가기")
                 }
             }
-        },
-        actions = {
-            IconButton(onClick = { /* 검색 기능 추가 가능 */ }) {
-                Icon(Icons.Filled.Search, contentDescription = "검색")
-            }
         }
     )
 }
