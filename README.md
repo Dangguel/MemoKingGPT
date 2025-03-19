@@ -1,4 +1,5 @@
-![image1](https://github.com/user-attachments/assets/4006fb8f-b469-4d8b-97ae-6096c1758fbe)# 📚 메모왕 GPT (MemoKing GPT)
+![memoking_gpt_logo](https://github.com/user-attachments/assets/d92eae31-026e-4e1e-a0bc-33fb586582c3)
+📚 메모왕 GPT (MemoKing GPT)
 
 ![메모왕 GPT](./images/image1.jpeg)
 
