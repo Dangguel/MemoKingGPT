@@ -1,4 +1,4 @@
-# 📚 메모왕 GPT (MemoKing GPT)
+![image1](https://github.com/user-attachments/assets/4006fb8f-b469-4d8b-97ae-6096c1758fbe)# 📚 메모왕 GPT (MemoKing GPT)
 
 ![메모왕 GPT](./images/image1.jpeg)
 
@@ -26,11 +26,16 @@ AI 기반 메모 관리 앱입니다.
 
 | 폴더 관리 화면 | 폴더 내 노트 보기 | 노트 작성 화면 |
 |---|---|---|
-| ![폴더 관리](./images/image1.jpeg) | ![폴더 내부](./images/image2.jpeg) | ![노트 작성](./images/image3.jpeg) |
+| ![폴더 관리](![image1](https://github.com/user-attachments/assets/8d373cd5-93aa-4418-aec7-0a019be94dcf)
+) | ![폴더 내부](![image2](https://github.com/user-attachments/assets/ca092d4e-1870-4afc-8c4a-3bb3006e987c)
+) | ![노트 작성](![image3](https://github.com/user-attachments/assets/c49240ee-f47d-4c50-838c-cd9123a89dce)
+) |
 
 | 이미지 OCR 팝업 | 요약 타입 선택 화면 |
 |---|---|
-| ![OCR 팝업](./images/image4.jpeg) | ![요약 타입 선택](./images/image5.jpeg) |
+| ![OCR 팝업](![image4](https://github.com/user-attachments/assets/03f1781e-59b9-4734-bf3f-b900473c57ed)
+) | ![요약 타입 선택](![image5](https://github.com/user-attachments/assets/ec924395-ee21-4594-a6d0-d75206a989ec)
+) |
 
 ---
 
