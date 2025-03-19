@@ -1,5 +1,6 @@
-
 # 📚 메모왕 GPT (MemoKing GPT)
+
+![메모왕 GPT](./images/image1.jpeg)
 
 ## ✏️ 프로젝트 소개
 메모왕 GPT는 손글씨 또는 이미지 OCR 기능과  
@@ -12,13 +13,24 @@ AI 기반 메모 관리 앱입니다.
 - 폴더 & 노트 CRUD 기능
 - 폴더 내 폴더 및 노트 이동 / 계층형 정리
 - 이미지 OCR(한국어/영어 지원)
-- GPT 요약 기능 (4가지 요약 타입)
-- 요약 결과 & OCR 결과 BottomSheet 표시 및 적용
+- GPT 요약 기능 (핵심 정리 / 전체 요약 / 목록 변환 / 액션 플랜)
+- 요약 결과 및 OCR 결과 BottomSheet 표시 및 적용
 - AI 호출 2회마다 전면 광고 노출
 - 첫 노트 저장 시 In-App Review 요청
 - 앱 실행 시 강제 업데이트 체크 및 스토어 이동
-- 노트 및 폴더 백업/복원 기능 (JSON)
 - 다크모드 대응
+
+---
+
+## 🖼️ 스크린샷
+
+| 폴더 관리 화면 | 폴더 내 노트 보기 | 노트 작성 화면 |
+|---|---|---|
+| ![폴더 관리](./images/image1.jpeg) | ![폴더 내부](./images/image2.jpeg) | ![노트 작성](./images/image3.jpeg) |
+
+| 이미지 OCR 팝업 | 요약 타입 선택 화면 |
+|---|---|
+| ![OCR 팝업](./images/image4.jpeg) | ![요약 타입 선택](./images/image5.jpeg) |
 
 ---
 
@@ -43,13 +55,15 @@ data/
  ├─ local/
  ├─ remote/
  ├─ repository/
+di/
 domain/
  ├─ model/
+ ├─ repository/
  ├─ usecase/
 presentation/
+ ├─ ads/
  ├─ ui/
  ├─ viewmodel/
- ├─ navigation/
 util/
 ```
 
@@ -67,3 +81,11 @@ util/
 - GPT-4 API 전환
 - Pro 버전 결제 시스템 추가
 - GPT 프롬프트 세부 커스터마이징 기능 추가
+
+---
+
+## 📲 다운로드
+<a href="https://play.google.com/store/apps/details?id=kr.co.dangguel.memokinggpt" target="_blank">
+  <img src="https://play.google.com/intl/en_us/badges/images/generic/ko_badge_web_generic.png" height="60">
+</a>
+
