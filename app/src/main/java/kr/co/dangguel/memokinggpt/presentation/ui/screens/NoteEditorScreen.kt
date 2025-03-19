@@ -1,8 +1,11 @@
 package kr.co.dangguel.memokinggpt.presentation.ui.screens
 
 import android.app.Activity
+import android.content.ContentValues
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.MediaStore
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
@@ -18,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import kr.co.dangguel.memokinggpt.R
 import kr.co.dangguel.memokinggpt.presentation.ads.AdManager
@@ -78,6 +82,23 @@ fun NoteEditorScreen(
                 viewModel.processOcrImage(context, it)
                 showOcrBottomSheet = true
             }
+        }
+    }
+
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            imageUri = context.contentResolver.insert(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                ContentValues().apply {
+                    put(MediaStore.Images.Media.TITLE, "New Picture")
+                    put(MediaStore.Images.Media.DESCRIPTION, "From Camera")
+                }
+            )
+            cameraLauncher.launch(imageUri ?: Uri.EMPTY)
+        } else {
+            Toast.makeText(context, "카메라 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -198,8 +219,20 @@ fun NoteEditorScreen(
             dismissButton = {
                 Button(onClick = {
                     showOcrDialog = false
-                    imageUri = context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null)
-                    cameraLauncher.launch(imageUri ?: Uri.EMPTY)
+                    if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.CAMERA)
+                        != PackageManager.PERMISSION_GRANTED
+                    ) {
+                        cameraPermissionLauncher.launch(android.Manifest.permission.CAMERA)
+                    } else {
+                        imageUri = context.contentResolver.insert(
+                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                            ContentValues().apply {
+                                put(MediaStore.Images.Media.TITLE, "New Picture")
+                                put(MediaStore.Images.Media.DESCRIPTION, "From Camera")
+                            }
+                        )
+                        cameraLauncher.launch(imageUri ?: Uri.EMPTY)
+                    }
                 }) {
                     Icon(Icons.Default.Camera, contentDescription = null)
                     Text(stringResource(R.string.ocr_camera_button))
