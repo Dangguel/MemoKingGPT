@@ -1,7 +1,7 @@
-![memoking_gpt_logo](https://github.com/user-attachments/assets/d92eae31-026e-4e1e-a0bc-33fb586582c3)
-📚 메모왕 GPT (MemoKing GPT)
 
-![메모왕 GPT](./images/image1.jpeg)
+![ic_logo-playstore](https://github.com/user-attachments/assets/001ede0d-0182-4dc7-b728-9c9d82835f3e)
+
+📚 메모왕 GPT (MemoKing GPT)
 
 ## ✏️ 프로젝트 소개
 메모왕 GPT는 손글씨 또는 이미지 OCR 기능과  
