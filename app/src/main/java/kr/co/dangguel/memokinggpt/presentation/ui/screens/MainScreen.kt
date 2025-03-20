@@ -1,6 +1,7 @@
 package kr.co.dangguel.memokinggpt.presentation.ui.screens
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
@@ -24,7 +25,6 @@ fun MainScreen(
     onFolderClick: (Long) -> Unit,
     onNoteClick: (Long) -> Unit,
     onBackClick: () -> Unit,
-    onAddFolderClick: () -> Unit,
     onAddNoteClick: () -> Unit
 ) {
     val context = LocalContext.current
@@ -45,6 +45,9 @@ fun MainScreen(
     val title =
         if (currentFolderId == null) stringResource(R.string.app_name) else "📂 ${folders.find { it.folder.id == currentFolderId }?.folder?.name ?: "Unknown"}"
     val showBackButton = currentFolderId != null
+
+    var showFolderDialog by remember { mutableStateOf(false) }
+    var newFolderName by remember { mutableStateOf("") }
 
     Scaffold(
         topBar = {
@@ -80,7 +83,7 @@ fun MainScreen(
                 RoundedButton(
                     icon = newFolderIcon,
                     text = stringResource(R.string.new_folder),
-                    onClick = onAddFolderClick,
+                    onClick = { showFolderDialog = true },
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -207,6 +210,43 @@ fun MainScreen(
             dismissButton = {
                 TextButton(onClick = { showDeleteDialog = false }) {
                     Text(stringResource(R.string.no))
+                }
+            }
+        )
+    }
+
+    if (showFolderDialog) {
+        AlertDialog(
+            onDismissRequest = { showFolderDialog = false },
+            title = { Text(stringResource(R.string.create_folder_dialog_title)) },
+            text = {
+                OutlinedTextField(
+                    value = newFolderName,
+                    onValueChange = { newFolderName = it },
+                    placeholder = { Text(stringResource(R.string.create_folder_dialog_hint)) },
+                    singleLine = true
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    if (newFolderName.isNotBlank()) {
+                        viewModel.createFolder(newFolderName)
+                        showFolderDialog = false
+                        newFolderName = ""
+                    } else {
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.empty_folder_name_warning),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }) {
+                    Text(stringResource(R.string.create_folder_confirm))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showFolderDialog = false }) {
+                    Text(stringResource(R.string.create_folder_cancel))
                 }
             }
         )

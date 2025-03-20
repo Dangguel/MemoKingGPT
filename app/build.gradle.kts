@@ -15,8 +15,8 @@ android {
         applicationId = "kr.co.dangguel.memokinggpt"
         minSdk = 26
         targetSdk = 35
-        versionCode = 101
-        versionName = "1.01"
+        versionCode = 1001
+        versionName = "1.001"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

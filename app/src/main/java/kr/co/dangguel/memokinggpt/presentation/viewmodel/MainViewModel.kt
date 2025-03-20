@@ -110,4 +110,14 @@ class MainViewModel @Inject constructor(
             noteUseCase.deleteNoteById(noteId) // ✅ 노트 삭제를 UseCase에서 처리
         }
     }
+
+    fun createFolder(folderName: String) {
+        viewModelScope.launch {
+            folderUseCase.insertFolder(
+                FolderEntity(
+                    name = folderName
+                )
+            )
+        }
+    }
 }

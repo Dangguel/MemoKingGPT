@@ -73,4 +73,10 @@
     <string name="update_required_message">최신 버전이 출시되었습니다.\n원활한 사용을 위해 지금 업데이트 해주세요.</string>
     <string name="update_now">업데이트 하기</string>
 
+    <string name="create_folder_dialog_title">폴더 생성</string>
+    <string name="create_folder_dialog_hint">폴더 이름을 입력하세요</string>
+    <string name="create_folder_confirm">생성</string>
+    <string name="create_folder_cancel">취소</string>
+    <string name="empty_folder_name_warning">폴더 이름을 입력해주세요.</string>
+
 </resources>

@@ -28,7 +28,6 @@ fun AppNavGraph(
                     navController.navigate("note_edit?noteId=$noteId&folderId=-1")
                 },
                 onBackClick = { navController.popBackStack() },
-                onAddFolderClick = { navController.navigate("folder_edit/null") },
                 onAddNoteClick = { navController.navigate("note_edit?noteId=null&folderId=-1") },
                 currentFolderId = null
             )

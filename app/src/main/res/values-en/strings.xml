@@ -73,5 +73,10 @@
     <string name="update_required_message">A new version is available.\nPlease update to continue using the app smoothly.</string>
     <string name="update_now">Update Now</string>
 
+    <string name="create_folder_dialog_title">Create Folder</string>
+    <string name="create_folder_dialog_hint">Enter folder name</string>
+    <string name="create_folder_confirm">Create</string>
+    <string name="create_folder_cancel">Cancel</string>
+    <string name="empty_folder_name_warning">Please enter a folder name.</string>
 
 </resources>
